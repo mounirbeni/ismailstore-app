@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Star } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { MenuItem } from '@/app/data/menu';
 import { useCart } from '@/app/context/CartContext';
 import MenuCard from './MenuCard';
@@ -10,6 +10,7 @@ import CategoryIcon from './CategoryIcon';
 interface Props {
   activeCategory: string;
   menuItems: MenuItem[];
+  query?: string;
 }
 
 const categoryGradients: Record<string, string> = {
@@ -36,10 +37,10 @@ function PopularCard({ item }: { item: MenuItem }) {
 
   return (
     <div
-      className="flex-shrink-0 w-36 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-visible cursor-pointer active:scale-95 transition-transform"
+      className="flex-shrink-0 w-40 lg:w-56 bg-cream-card rounded-3xl shadow-[0_2px_14px_rgba(120,70,30,0.07)] border border-line overflow-visible cursor-pointer active:scale-95 hover:shadow-[0_6px_22px_rgba(120,70,30,0.13)] transition-all"
       onClick={() => dispatch({ type: 'SET_SELECTED_PRODUCT', payload: item })}
     >
-      <div className={`relative h-28 rounded-t-2xl overflow-hidden ${!hasImage ? `bg-gradient-to-br ${gradient} flex items-center justify-center` : ''}`}>
+      <div className={`relative h-28 lg:h-36 rounded-t-3xl overflow-hidden ${!hasImage ? `bg-gradient-to-br ${gradient} flex items-center justify-center` : ''}`}>
         {hasImage ? (
           <img src={item.image} alt={item.name} className="w-full h-full object-cover" onError={() => setImgError(true)} />
         ) : (
@@ -52,15 +53,15 @@ function PopularCard({ item }: { item: MenuItem }) {
         )}
       </div>
       <div className="p-3 relative">
-        <p className="font-bold text-gray-900 text-xs leading-snug line-clamp-2">{item.name}</p>
+        <p className="font-display font-semibold text-ink text-sm leading-snug line-clamp-2">{item.name}</p>
         <div className="flex items-center justify-between mt-2">
-          <span className="text-amber-600 font-black text-sm">{item.price} DH</span>
+          <span className="text-amber-600 font-bold text-sm">{item.price} DH</span>
           <button
             onClick={e => {
               e.stopPropagation();
               dispatch({ type: 'ADD_ITEM', payload: item });
             }}
-            className="w-7 h-7 rounded-lg bg-amber-500 flex items-center justify-center shadow-md shadow-amber-200 active:scale-90 transition-transform"
+            className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center shadow-md shadow-amber-300/60 active:scale-90 transition-transform"
           >
             <Plus className="w-3.5 h-3.5 text-white" />
           </button>
@@ -74,25 +75,43 @@ function SectionHeader({ cat }: { cat: string }) {
   const info = sectionTitles[cat];
   if (!info) return null;
   return (
-    <div className="flex items-center gap-3 px-4 py-3 bg-white sticky top-[49px] lg:top-0 z-10 border-b border-gray-50">
-      <CategoryIcon category={cat} className="w-5 h-5 text-amber-500" />
+    <div className="flex items-center gap-3 px-5 lg:px-10 pt-8 pb-4">
+      <span className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+        <CategoryIcon category={cat} className="w-5 h-5 text-amber-600" />
+      </span>
       <div>
-        <h2 className="font-black text-gray-900 text-base leading-none">{info.title}</h2>
-        <p className="text-gray-400 text-xs mt-0.5">{info.subtitle}</p>
+        <h2 className="font-display text-2xl text-ink font-medium leading-none">{info.title}</h2>
+        <p className="text-ink/50 text-xs mt-1.5">{info.subtitle}</p>
       </div>
     </div>
   );
 }
 
-export default function MenuSection({ activeCategory, menuItems }: Props) {
+const GRID = 'px-5 lg:px-10 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 lg:gap-5';
+
+export default function MenuSection({ activeCategory, menuItems, query = '' }: Props) {
   const popular = menuItems.filter(i => i.badge === 'popular');
+  const q = query.trim().toLowerCase();
+
+  if (q) {
+    const found = menuItems.filter(i => `${i.name} ${i.description} ${i.category}`.toLowerCase().includes(q));
+    return (
+      <div className="max-w-7xl mx-auto pb-32 lg:pb-12 pt-6">
+        <p className="px-5 lg:px-10 pb-4 text-sm text-ink/60">
+          {found.length} résultat{found.length > 1 ? 's' : ''} pour « {query.trim()} »
+        </p>
+        <div className={GRID}>{found.map(item => <MenuCard key={item.id} item={item} />)}</div>
+        {found.length === 0 && <p className="px-5 lg:px-10 py-10 text-center text-ink/50">Aucun plat trouvé.</p>}
+      </div>
+    );
+  }
 
   if (activeCategory !== 'all') {
     const filtered = menuItems.filter(i => i.category === activeCategory);
     return (
-      <div className="bg-white pb-32 lg:pb-8">
+      <div className="max-w-7xl mx-auto pb-32 lg:pb-12">
         <SectionHeader cat={activeCategory} />
-        <div className="px-4 lg:grid lg:grid-cols-2 lg:gap-x-6">
+        <div className={GRID}>
           {filtered.map(item => <MenuCard key={item.id} item={item} />)}
         </div>
       </div>
@@ -102,21 +121,17 @@ export default function MenuSection({ activeCategory, menuItems }: Props) {
   const ORDER = ['tajins', 'salads', 'briwat', 'couscous'];
 
   return (
-    <div className="bg-white pb-32 lg:pb-8">
+    <div className="max-w-7xl mx-auto pb-32 lg:pb-12">
       {/* Popular section */}
       {popular.length > 0 && (
         <div className="mb-2">
-          <div className="px-4 pt-4 pb-3">
-            <h2 className="flex items-center gap-2 font-black text-gray-900 text-base">
-              <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
-              Les plus populaires
-            </h2>
-            <p className="text-gray-400 text-xs mt-0.5">Les plats préférés de nos clients</p>
+          <div className="px-5 lg:px-10 pt-7 pb-4">
+            <h2 className="font-display text-2xl lg:text-3xl text-ink font-medium">Plats populaires</h2>
+            <p className="text-ink/50 text-xs lg:text-sm mt-1">Les plats préférés de nos clients</p>
           </div>
-          <div className="flex gap-3 px-4 pb-4 overflow-x-auto scrollbar-hide">
+          <div className="flex gap-3 lg:gap-5 px-5 lg:px-10 pb-3 overflow-x-auto scrollbar-hide">
             {popular.map(item => <PopularCard key={item.id} item={item} />)}
           </div>
-          <div className="h-2 bg-gray-50" />
         </div>
       )}
 
@@ -127,7 +142,7 @@ export default function MenuSection({ activeCategory, menuItems }: Props) {
         return (
           <div key={cat}>
             <SectionHeader cat={cat} />
-            <div className="px-4 lg:grid lg:grid-cols-2 lg:gap-x-6">
+            <div className={GRID}>
               {items.map(item => <MenuCard key={item.id} item={item} />)}
             </div>
           </div>

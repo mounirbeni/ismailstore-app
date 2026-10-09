@@ -43,12 +43,12 @@ export default function MenuCard({ item }: Props) {
 
   return (
     <div
-      className="flex items-center gap-3 py-4 border-b border-gray-100 cursor-pointer active:bg-gray-50 transition-colors"
+      className="relative flex items-center gap-3.5 p-3 rounded-3xl bg-cream-card border border-line shadow-[0_2px_14px_rgba(120,70,30,0.07)] hover:shadow-[0_6px_22px_rgba(120,70,30,0.13)] cursor-pointer active:scale-[0.99] transition-all"
       onClick={openDetail}
     >
-      {/* Image + qty control */}
-      <div className="relative flex-shrink-0">
-        <div className={`w-[90px] h-[90px] rounded-2xl overflow-hidden shadow-sm ${!hasImage ? `bg-gradient-to-br ${gradient} flex items-center justify-center` : ''}`}>
+      {/* Image */}
+      <div className="flex-shrink-0">
+        <div className={`w-[92px] h-[92px] rounded-2xl overflow-hidden shadow-sm ${!hasImage ? `bg-gradient-to-br ${gradient} flex items-center justify-center` : ''}`}>
           {hasImage ? (
             <img
               src={item.image}
@@ -61,13 +61,33 @@ export default function MenuCard({ item }: Props) {
           )}
         </div>
 
+      </div>
+
+      {/* Text side */}
+      <div className="flex-1 min-w-0 pl-1">
+        {badge && (
+          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold mb-1.5 ${badge.className}`}>
+            <badge.Icon className="w-3 h-3" />
+            {badge.label}
+          </span>
+        )}
+        <h3 className="font-display font-semibold text-ink text-base leading-snug">{item.name}</h3>
+        <p className="text-ink/55 text-xs mt-1 line-clamp-2 leading-relaxed">{item.description}</p>
+        {item.customOrder
+          ? <p className="text-green-600 font-semibold text-xs mt-2">Contactez l&apos;équipe pour personnaliser</p>
+          : <p className="text-amber-600 font-bold text-base mt-2">{item.price} DH</p>
+        }
+      </div>
+
+      {/* Add control */}
+      <div className="flex-shrink-0 self-end">
         {item.customOrder ? (
           <a
             href={`https://wa.me/${RESTAURANT_PHONE}?text=${encodeURIComponent(`Bonjour, je souhaite commander "${item.name}" et avoir des informations sur les options et le prix.`)}`}
             target="_blank"
             rel="noopener noreferrer"
             onClick={e => e.stopPropagation()}
-            className="absolute -bottom-2 -right-2 w-8 h-8 rounded-xl bg-green-500 shadow-lg shadow-green-200 flex items-center justify-center active:scale-90 transition-transform"
+            className="w-9 h-9 rounded-full bg-green-500 shadow-lg shadow-green-200 flex items-center justify-center active:scale-90 transition-transform"
           >
             <MessageCircle className="w-4 h-4 text-white" />
           </a>
@@ -77,13 +97,13 @@ export default function MenuCard({ item }: Props) {
               e.stopPropagation();
               dispatch({ type: 'ADD_ITEM', payload: item });
             }}
-            className="absolute -bottom-2 -right-2 w-8 h-8 rounded-xl bg-amber-500 shadow-lg shadow-amber-200 flex items-center justify-center active:scale-90 transition-transform"
+            className="w-9 h-9 rounded-full bg-amber-500 shadow-lg shadow-amber-300/60 flex items-center justify-center active:scale-90 transition-transform"
           >
             <Plus className="w-4 h-4 text-white" />
           </button>
         ) : (
           <div
-            className="absolute -bottom-2 -right-2 flex items-center gap-1 bg-amber-500 rounded-xl px-1.5 py-1 shadow-lg shadow-amber-200"
+            className="flex items-center gap-1 bg-amber-500 rounded-full px-2 py-1.5 shadow-lg shadow-amber-300/60"
             onClick={e => e.stopPropagation()}
           >
             <button
@@ -101,22 +121,6 @@ export default function MenuCard({ item }: Props) {
             </button>
           </div>
         )}
-      </div>
-
-      {/* Text side */}
-      <div className="flex-1 min-w-0 pl-1">
-        {badge && (
-          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold mb-1.5 ${badge.className}`}>
-            <badge.Icon className="w-3 h-3" />
-            {badge.label}
-          </span>
-        )}
-        <h3 className="font-bold text-gray-900 text-sm leading-snug">{item.name}</h3>
-        <p className="text-gray-400 text-xs mt-1 line-clamp-2 leading-relaxed">{item.description}</p>
-        {item.customOrder
-          ? <p className="text-green-600 font-semibold text-xs mt-2">Contactez l&apos;équipe pour personnaliser</p>
-          : <p className="text-amber-600 font-black text-base mt-2">{item.price} DH</p>
-        }
       </div>
     </div>
   );

@@ -22,7 +22,7 @@ export default function CartButton() {
   if (totalItems === 0) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 pb-5 pointer-events-none flex justify-center">
+    <div className="fixed inset-x-0 bottom-0 z-30 pb-5 pointer-events-none flex justify-center lg:hidden">
       <div className="w-full max-w-[430px] px-4 pointer-events-auto">
         <button
           onClick={() => dispatch({ type: 'SET_CART_OPEN', payload: true })}

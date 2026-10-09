@@ -28,11 +28,11 @@ export default function CartDrawer() {
         onClick={() => dispatch({ type: 'SET_CART_OPEN', payload: false })}
       />
 
-      <div className="fixed inset-x-0 bottom-0 z-50 flex justify-center">
-        <div className="w-full max-w-[430px] bg-white rounded-t-3xl shadow-2xl flex flex-col max-h-[88vh]">
+      <div className="fixed inset-x-0 bottom-0 z-50 flex justify-center lg:inset-y-0 lg:left-auto lg:right-0 lg:justify-end">
+        <div className="w-full max-w-[430px] bg-cream-card rounded-t-3xl shadow-2xl flex flex-col max-h-[88vh] lg:max-h-none lg:h-full lg:max-w-[440px] lg:rounded-none lg:rounded-l-3xl">
 
           {/* Handle */}
-          <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
+          <div className="flex justify-center pt-3 pb-1 flex-shrink-0 lg:hidden">
             <div className="w-10 h-1 bg-gray-200 rounded-full" />
           </div>
 
@@ -40,7 +40,7 @@ export default function CartDrawer() {
           <div className="flex items-center justify-between px-5 py-3 flex-shrink-0">
             <div className="flex items-center gap-2.5">
               <ShoppingBag className="w-5 h-5 text-amber-500" />
-              <h2 className="font-black text-gray-900 text-lg">Votre panier</h2>
+              <h2 className="font-display font-semibold text-ink text-xl">Votre panier</h2>
               {totalItems > 0 && (
                 <span className="bg-amber-500 text-white text-xs font-black w-5 h-5 rounded-full flex items-center justify-center">
                   {totalItems}
